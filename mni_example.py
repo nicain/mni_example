@@ -29,9 +29,24 @@ def get_mni_transform_matrix(specimen_name):
 
     return mni_transform_matrix
 
+def to_mni(input_vals, M):
+    
+    assert input_vals.shape[0] == 3 
+
+    if input_vals.ndim == 1:
+        input_vals_pad = np.hstack((input_vals, np.array([1])))
+        return M.dot(input_vals_pad)[:3]
+        
+    elif input_vals.ndim == 2:
+        input_vals_pad = np.vstack((input_vals, np.ones((1,input_vals.shape[1]))))
+        return M.dot(input_vals_pad)[:3,:]
+
+    else:
+        raise RuntimeError('invalid input shape')
 
 if __name__ == "__main__":
 
     specimen_name = 'H0351.2001'
     mni_transform_matrix = get_mni_transform_matrix(specimen_name)
-    
+    x = np.array([[74, 96, 29],[ 129, 78, 81]]).T
+    print to_mni(x, mni_transform_matrix)
