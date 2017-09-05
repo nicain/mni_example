@@ -11,7 +11,7 @@ def download_specimen(specimen_name):
     result = requests.get('%s/Specimen/query.json?criteria=[name$eq\'%s\']&include=alignment3d' % (service,specimen_name)).json()
     specimen = result.pop('msg')[0]
     x = specimen['alignment3d']
-    alignment_data = np.array([x['trv_%02d' % ii] for ii in range(12)])
+    alignment_data = np.array([x['tvr_%02d' % ii] for ii in range(12)])
     M1 = alignment_data[:9].reshape((3,3))
     M2 = alignment_data[9:].reshape((3,1))
     M3 = np.array([[0,0,0,1]])
@@ -46,17 +46,12 @@ def to_mni(input_vals, M):
 
 if __name__ == "__main__":
 
-    # specimen_name = 'H0351.2001'
-    # mni_transform_matrix = get_mni_transform_matrix(specimen_name)
-    # x = np.array([[74, 96, 29],[ 129, 78, 81], [94,102,26], [145,75,66]]).T
-    # print to_mni(x, mni_transform_matrix)
+    specimen_name = 'H0351.2001'
+    mni_transform_matrix = get_mni_transform_matrix(specimen_name)
+    x = np.array([[74, 96, 29],[ 129, 78, 81], [94,102,26], [145,75,66]]).T
+    print to_mni(x, mni_transform_matrix)
 
     specimen_name = 'H0351.2002'
     mni_transform_matrix = get_mni_transform_matrix(specimen_name)
     x = np.array([[104, 101, 54]]).T
     print to_mni(x, mni_transform_matrix)
-
-    print requests.get('http://api.brain-map.org/api/v2/data/query.json?criteria=model::Donor,\
-            rma::criteria,products[abbreviation$eq\'HumanMA\'], \
-            rma::include,specimens[parent_id$eqnull](alignment3d), \
-            rma::options[only$eq\'donors.id,donors.name,specimens.id\']').json()
